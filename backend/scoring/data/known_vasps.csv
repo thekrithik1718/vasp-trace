@@ -3,3 +3,5 @@ VASP001,Exchange Alpha
 VASP002,Binance
 VASP003,Kraken
 VASP004,Coinbase
+vasp_exchange_001,Exchange Alpha
+vasp_exchange_002,Exchange Beta
