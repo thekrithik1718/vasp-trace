@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VASP-TRACE | AI Risk & Explainability</title>
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header>
+      <span class="brand-badge">VASP-TRACE Compliance Engine</span>
+      <h1>AI Risk & Explainability Evaluation</h1>
+      <p class="subtitle">Evaluate counterparty transaction topologies and compliance indicators with deterministic XAI audits.</p>
+    </header>
+
+    <!-- How It Works & Pipeline Card -->
+    <section class="how-it-works-card" aria-label="Pipeline Architecture">
+      <div class="pipeline-header">
+        <span class="architecture-badge">Deterministic & Rule-Based Model</span>
+        <h2 class="how-it-works-title">How It Works</h2>
+        <p class="pipeline-desc">
+          Auditable compliance pipeline: <strong>Graph Data</strong> → <strong>Compliance Signals</strong> → <strong>AI Risk Scoring</strong> → <strong>Explainable Result</strong>. Evaluated using transparent deterministic rules with zero black-box opacity.
+        </p>
+      </div>
+      <div class="pipeline-steps">
+        <div class="pipeline-step">
+          <span class="step-num">1</span>
+          <div class="step-content">
+            <strong>Graph Data</strong>
+            <p>Hops & mixer proximity</p>
+          </div>
+        </div>
+        <span class="step-arrow">→</span>
+        <div class="pipeline-step">
+          <span class="step-num">2</span>
+          <div class="step-content">
+            <strong>Compliance Signals</strong>
+            <p>Sanctions, darknet & KYC</p>
+          </div>
+        </div>
+        <span class="step-arrow">→</span>
+        <div class="pipeline-step">
+          <span class="step-num">3</span>
+          <div class="step-content">
+            <strong>AI Risk Scoring</strong>
+            <p>Deterministic rules (0–100)</p>
+          </div>
+        </div>
+        <span class="step-arrow">→</span>
+        <div class="pipeline-step">
+          <span class="step-num">4</span>
+          <div class="step-content">
+            <strong>Explainable Result</strong>
+            <p>Ranked factors & narrative</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Error Alert Box -->
+    <div id="alert-error" class="alert alert-error" role="alert"></div>
+
+    <div class="layout-grid">
+      <!-- Input Form Card -->
+      <section class="card" aria-labelledby="form-heading">
+        <h2 id="form-heading" class="card-title">
+          <span>Input Signals</span>
+        </h2>
+
+        <!-- Demo Scenarios Section -->
+        <div class="scenarios-container">
+          <div class="scenarios-title">
+            <span>⚡ Demo Scenarios</span>
+            <span class="scenarios-subtitle">Click to populate form signals</span>
+          </div>
+          <div class="scenario-buttons">
+            <button type="button" class="btn-scenario btn-scenario-high" id="btn-scenario-high">High Risk</button>
+            <button type="button" class="btn-scenario btn-scenario-sanction" id="btn-scenario-sanction">Sanctions Escalation</button>
+            <button type="button" class="btn-scenario btn-scenario-kyc" id="btn-scenario-kyc">KYC Mitigation</button>
+            <button type="button" class="btn-scenario btn-scenario-low" id="btn-scenario-low">Low Risk</button>
+          </div>
+        </div>
+
+        <form id="ai-evaluation-form" novalidate>
+          <!-- Graph Metrics -->
+          <fieldset style="border: none; margin-bottom: 1.25rem;">
+            <legend style="font-weight: 700; font-size: 0.85rem; color: var(--accent-light); margin-bottom: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">Graph Topology</legend>
+            
+            <div class="form-group">
+              <label for="hop_count">Hop Count to Illicit / Sanctioned Node</label>
+              <input type="number" id="hop_count" name="hop_count" min="0" max="20" value="2" required>
+              <p class="help-text">Distance in transaction hops (0 = none, 1 = direct counterparty, 2+ = intermediary).</p>
+            </div>
+
+            <div class="form-group">
+              <label for="mixer_proximity">Coin Mixer Proximity Intensity (0.00 – 1.00)</label>
+              <div class="range-wrapper">
+                <input type="range" id="mixer_proximity" name="mixer_proximity" min="0" max="1" step="0.05" value="0.70">
+                <span id="mixer_proximity_val" class="range-val">0.70</span>
+              </div>
+              <p class="help-text">Relative deposit/withdrawal proximity to known obfuscation protocols.</p>
+            </div>
+          </fieldset>
+
+          <!-- Scoring Flags -->
+          <fieldset style="border: none; margin-bottom: 1.25rem;">
+            <legend style="font-weight: 700; font-size: 0.85rem; color: var(--accent-light); margin-bottom: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">Compliance Scoring Flags</legend>
+
+            <div class="checkbox-group">
+              <label class="checkbox-label" for="sanction_hit">
+                <input type="checkbox" id="sanction_hit" name="sanction_hit">
+                <span>Sanction List Match (OFAC / UN / EU)</span>
+              </label>
+            </div>
+
+            <div class="checkbox-group">
+              <label class="checkbox-label" for="darknet_exposure">
+                <input type="checkbox" id="darknet_exposure" name="darknet_exposure" checked>
+                <span>Darknet Marketplace Exposure</span>
+              </label>
+            </div>
+
+            <div class="checkbox-group">
+              <label class="checkbox-label" for="kyc_verified">
+                <input type="checkbox" id="kyc_verified" name="kyc_verified">
+                <span>Verified KYC & Regulated Counterparty VASP</span>
+              </label>
+            </div>
+          </fieldset>
+
+          <!-- Submit Button -->
+          <button type="submit" id="submit-btn" class="btn-primary">
+            <span id="btn-spinner" class="spinner" style="display: none;"></span>
+            <span id="btn-text">Evaluate Risk</span>
+          </button>
+        </form>
+      </section>
+
+      <!-- Output / Results Card -->
+      <section class="card" aria-labelledby="results-heading">
+        <h2 id="results-heading" class="card-title">
+          <span>AI Assessment & Explainability</span>
+        </h2>
+
+        <!-- Placeholder when no result is yet available -->
+        <div id="placeholder-box" class="placeholder-box">
+          <div class="placeholder-icon">🛡️</div>
+          <p>Configure input signals and click <strong>Evaluate Risk</strong> to view the automated assessment, ranked feature attributions, and compliance narrative.</p>
+        </div>
+
+        <!-- Results Container -->
+        <div id="results-container" class="results-container">
+          <!-- Overview Metrics -->
+          <div class="overview-grid">
+            <div class="stat-box">
+              <div class="stat-label">Risk Score</div>
+              <div id="stat-risk-score" class="stat-value">0.0</div>
+            </div>
+
+            <div class="stat-box">
+              <div class="stat-label">Risk Classification</div>
+              <div style="margin-top: 0.25rem;">
+                <span id="stat-risk-level" class="badge badge-low">LOW</span>
+              </div>
+            </div>
+
+            <div class="stat-box">
+              <div class="stat-label">Model Confidence</div>
+              <div id="stat-confidence" class="stat-value">0%</div>
+            </div>
+          </div>
+
+          <!-- Ranked Feature Contributions -->
+          <div class="contributions-section">
+            <h3 class="section-subtitle">Ranked Feature Attributions</h3>
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Feature Name</th>
+                    <th>Observed Value</th>
+                    <th>Contribution</th>
+                    <th>Explanation</th>
+                  </tr>
+                </thead>
+                <tbody id="contributions-tbody">
+                  <!-- Dynamically populated -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Compliance Narrative -->
+          <div class="narrative-section">
+            <h3 class="section-subtitle">Plain-English Compliance Narrative</h3>
+            <pre id="narrative-box" class="narrative-box"></pre>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- Page Controller Script (ES Module) -->
+  <script type="module" src="src/pages/aiEvaluation.js"></script>
+</body>
+</html>
