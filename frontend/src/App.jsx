@@ -1,75 +1,43 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Header from './components/Header.jsx';
-import FallbackNotice from './components/FallbackNotice.jsx';
 import TraceInput from './components/TraceInput.jsx';
 import Graph from './components/Graph.jsx';
-import VaspResultsPlaceholder from './components/VaspResultsPlaceholder.jsx';
-import { traceWallet, checkBackendHealth } from './services/api.js';
+import VaspResults from './components/VaspResults.jsx';
+import { traceWallet } from './services/api.js';
+import { transformBackendData } from './services/dataTransformer.js';
 import './App.css';
 
 function App() {
-  const [address, setAddress] = useState('0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045');
+  const [address, setAddress] = useState('wallet_suspicious_001');
   const [hopDepth, setHopDepth] = useState(2);
   const [isTracing, setIsTracing] = useState(false);
   const [hasTraced, setHasTraced] = useState(false);
-  const [traceProgressStep, setTraceProgressStep] = useState(1);
-  const [isLiveBackend, setIsLiveBackend] = useState(false);
-  const [isRetryingBackend, setIsRetryingBackend] = useState(false);
   const [graphData, setGraphData] = useState({ nodes: [], links: [] });
   const [candidates, setCandidates] = useState([]);
-  const [metrics, setMetrics] = useState(null);
+  const [error, setError] = useState(null);
 
-  // Check backend health on initial mount
-  useEffect(() => {
-    checkBackendHealth().then((isHealthy) => {
-      setIsLiveBackend(isHealthy);
-    });
-  }, []);
-
-  // Retry connecting to backend API
-  const handleRetryBackend = async () => {
-    setIsRetryingBackend(true);
-    try {
-      const isHealthy = await checkBackendHealth();
-      setIsLiveBackend(isHealthy);
-      if (hasTraced && address) {
-        await handleTrace(address);
-      }
-    } finally {
-      setIsRetryingBackend(false);
-    }
-  };
-
-  // Main Trace handler: sends address & hopDepth with animated progress steps
+  // Main Trace handler: sends address & hopDepth
   const handleTrace = async (targetAddress) => {
     const addr = targetAddress || address;
     if (!addr || !addr.trim()) return;
 
     setIsTracing(true);
-    setTraceProgressStep(1);
-
-    // Progressive step simulation for hackathon visual feedback
-    const step2Timer = setTimeout(() => setTraceProgressStep(2), 400);
-    const step3Timer = setTimeout(() => setTraceProgressStep(3), 850);
+    setError(null);
+    setHasTraced(false);
 
     try {
+      // Call the backend API
       const result = await traceWallet(addr, hopDepth);
       
-      // Allow user to see progressive scan steps
-      await new Promise((resolve) => setTimeout(resolve, 1100));
-
-      if (result && result.graph) {
-        setGraphData(result.graph);
-        setCandidates(result.candidates || []);
-        setMetrics(result.metrics || null);
-        setIsLiveBackend(!result.isFallback);
-        setHasTraced(true);
-      }
+      // result should contain { source_wallet, paths, scoring_results } based on backend contract
+      const transformedGraph = transformBackendData(result, result.scoring_results || []);
+      setGraphData(transformedGraph);
+      setCandidates(result.scoring_results || []);
+      setHasTraced(true);
     } catch (err) {
       console.error('[VASP TRACE] Trace execution error:', err);
+      setError(err.message || "Failed to trace wallet");
     } finally {
-      clearTimeout(step2Timer);
-      clearTimeout(step3Timer);
       setIsTracing(false);
     }
   };
@@ -84,34 +52,16 @@ function App() {
   const handleHopDepthChange = async (newDepth) => {
     setHopDepth(newDepth);
     if (hasTraced && address) {
-      setIsTracing(true);
-      try {
-        const result = await traceWallet(address, newDepth);
-        if (result && result.graph) {
-          setGraphData(result.graph);
-          setCandidates(result.candidates || []);
-          setMetrics(result.metrics || null);
-          setIsLiveBackend(!result.isFallback);
-        }
-      } finally {
-        setIsTracing(false);
-      }
+      handleTrace(address);
     }
   };
 
   return (
     <div className="dashboard-container">
       {/* Top Navigation & Brand with Hackathon Badge */}
-      <Header isLiveBackend={isLiveBackend} />
+      <Header />
 
       <main className="dashboard-main">
-        {/* Transparent Fallback Notice for Judges & Hackathon Demo */}
-        <FallbackNotice
-          isLiveBackend={isLiveBackend}
-          onRetry={handleRetryBackend}
-          isRetrying={isRetryingBackend}
-        />
-
         {/* Suspicious Address Search & Controls */}
         <TraceInput
           address={address}
@@ -122,6 +72,12 @@ function App() {
           setHopDepth={handleHopDepthChange}
         />
 
+        {error && (
+          <div style={{ color: '#ef4444', padding: '12px 24px', backgroundColor: 'rgba(239, 68, 68, 0.1)', borderRadius: '8px', margin: '0 24px 20px', border: '1px solid rgba(239, 68, 68, 0.2)' }}>
+            Error: {error}
+          </div>
+        )}
+
         {/* Core Content Grid: D3 Transaction Graph on Left, VASP Results on Right */}
         <div className="dashboard-grid">
           <section className="graph-section">
@@ -129,18 +85,16 @@ function App() {
               graphData={graphData}
               isTracing={isTracing}
               hasTraced={hasTraced}
-              traceProgressStep={traceProgressStep}
               onQuickStart={handleQuickStart}
               onSelectNode={() => {}}
             />
           </section>
 
           <aside className="results-section">
-            <VaspResultsPlaceholder
+            <VaspResults
               hasTraced={hasTraced}
               isTracing={isTracing}
               candidates={candidates}
-              metrics={metrics}
             />
           </aside>
         </div>
@@ -151,7 +105,7 @@ function App() {
         <div className="footer-content">
           <span>VASP TRACE Engine • Autonomous Multi-Chain Attribution System</span>
           <span className="footer-status font-mono">
-            {isLiveBackend ? '● API: Connected (Live)' : '○ Mode: Hackathon Demo (Simulation Fallback)'}
+             Backend Integration Pending
           </span>
         </div>
       </footer>

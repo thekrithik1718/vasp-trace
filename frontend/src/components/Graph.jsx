@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import * as d3 from 'd3';
 import NodeDetailsModal from './NodeDetailsModal.jsx';
 
-export default function Graph({ graphData, onSelectNode, isTracing, hasTraced, onQuickStart, traceProgressStep }) {
+export default function Graph({ graphData, onSelectNode, isTracing, hasTraced, onQuickStart }) {
   const containerRef = useRef(null);
   const svgRef = useRef(null);
   const [selectedNode, setSelectedNode] = useState(null);
@@ -245,14 +245,14 @@ export default function Graph({ graphData, onSelectNode, isTracing, hasTraced, o
       .attr('font-weight', '600')
       .text((d) => (d.label || `${d.id.slice(0, 6)}...${d.id.slice(-4)}`));
 
-    // Secondary sub-label (Balance / Exchange name)
+    // Secondary sub-label (Exchange name)
     labelGroup.append('text')
       .attr('class', 'node-sub-text font-mono text-halo')
       .attr('text-anchor', 'middle')
       .attr('y', (d) => (d.type === 'target' ? 47 : 43))
       .attr('fill', '#94a3b8')
       .attr('font-size', '9px')
-      .text((d) => (d.vaspName ? d.vaspName : d.balance));
+      .text((d) => (d.vaspName ? d.vaspName : ''));
 
     // Simulation Tick handler
     simulation.on('tick', () => {
@@ -387,25 +387,17 @@ export default function Graph({ graphData, onSelectNode, isTracing, hasTraced, o
                 <button
                   type="button"
                   className="quick-demo-btn"
-                  onClick={() => onQuickStart('0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045')}
+                  onClick={() => onQuickStart('wallet_suspicious_001')}
                 >
-                  <span className="q-tag">ETH</span>
-                  <span>Exploit Cluster Demo</span>
-                </button>
-                <button
-                  type="button"
-                  className="quick-demo-btn"
-                  onClick={() => onQuickStart('bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq')}
-                >
-                  <span className="q-tag">BTC</span>
-                  <span>Mixer Outflow Demo</span>
+                  <span className="q-tag">DATA</span>
+                  <span>Sample Suspicious Wallet</span>
                 </button>
               </div>
             </div>
           </div>
         )}
 
-        {/* State 2: Multi-step Loading State while tracing */}
+        {/* State 2: Loading State while tracing */}
         {isTracing && (
           <div className="graph-loading-overlay">
             <div className="loading-card">
@@ -416,17 +408,13 @@ export default function Graph({ graphData, onSelectNode, isTracing, hasTraced, o
               <p className="loading-subtitle">Querying ledger blocks, expanding peel chains & evaluating attribution heuristics...</p>
               
               <div className="tracing-steps-list">
-                <div className={`step-item ${traceProgressStep >= 1 ? 'step-active' : ''}`}>
-                  <span className="step-icon">{traceProgressStep > 1 ? '✓' : '1'}</span>
-                  <span>Ingesting wallet address & querying parent txs</span>
+                <div className="step-item step-active">
+                  <span className="step-icon">1</span>
+                  <span>Fetching transaction topology...</span>
                 </div>
-                <div className={`step-item ${traceProgressStep >= 2 ? 'step-active' : ''}`}>
-                  <span className="step-icon">{traceProgressStep > 2 ? '✓' : '2'}</span>
-                  <span>Mapping multi-hop intermediary flow paths</span>
-                </div>
-                <div className={`step-item ${traceProgressStep >= 3 ? 'step-active' : ''}`}>
-                  <span className="step-icon">{traceProgressStep >= 3 ? '✓' : '3'}</span>
-                  <span>Attributing VASP deposit clusters & scoring risk</span>
+                <div className="step-item step-active">
+                  <span className="step-icon">2</span>
+                  <span>Evaluating VASP attributions...</span>
                 </div>
               </div>
             </div>
@@ -440,7 +428,7 @@ export default function Graph({ graphData, onSelectNode, isTracing, hasTraced, o
         {hoveredLink && (
           <div className="link-hover-tooltip font-mono">
             <div className="tooltip-title">Transfer Record</div>
-            <div className="tooltip-row"><span>Amount:</span> <strong>{hoveredLink.amount} ({hoveredLink.amountUsd})</strong></div>
+            <div className="tooltip-row"><span>Amount:</span> <strong>{hoveredLink.amount}</strong></div>
             <div className="tooltip-row"><span>Timestamp:</span> {hoveredLink.timestamp}</div>
             <div className="tooltip-row"><span>Tx Hash:</span> {hoveredLink.txHash}</div>
             <div className="tooltip-row"><span>Classification:</span> {hoveredLink.isTracedPath ? '⚡ Primary Traced Path' : 'Secondary Branch'}</div>

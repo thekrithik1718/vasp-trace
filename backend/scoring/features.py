@@ -32,5 +32,6 @@ def extract_features(path: TransactionPath, vasp_detector: VaspDetector, total_p
         "is_vasp_destination": is_vasp_destination,
         "hop_count": hop_count,
         "amount_retention": retention_ratio,
-        "supporting_path_count": supporting_path_count
+        "supporting_path_count": supporting_path_count,
+        "destination_address": final_address
     }

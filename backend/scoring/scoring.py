@@ -18,6 +18,7 @@ def calculate_score(features: Dict[str, Any]) -> ScoringResult:
         evidence.append("Destination is not a known VASP.")
         return ScoringResult(
             vasp_name=None,
+            destination_address=features.get("destination_address"),
             score=0,
             confidence_level="VERY_LOW",
             hop_count=hop_count,
@@ -97,6 +98,7 @@ def calculate_score(features: Dict[str, Any]) -> ScoringResult:
 
     return ScoringResult(
         vasp_name=vasp_name,
+        destination_address=features.get("destination_address"),
         score=final_score,
         confidence_level=confidence_level,
         hop_count=hop_count,

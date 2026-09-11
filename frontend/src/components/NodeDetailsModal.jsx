@@ -60,16 +60,6 @@ export default function NodeDetailsModal({ node, connectedLinks, onClose }) {
     return addr;
   };
 
-  const getRiskClass = (level) => {
-    switch (level?.toLowerCase()) {
-      case 'critical': return 'risk-crimson';
-      case 'high': return 'risk-crimson';
-      case 'moderate': return 'risk-amber';
-      case 'low': return 'risk-emerald';
-      default: return 'risk-emerald';
-    }
-  };
-
   return (
     <div className="node-details-drawer">
       <div className="drawer-header">
@@ -102,23 +92,6 @@ export default function NodeDetailsModal({ node, connectedLinks, onClose }) {
             <span className="d-label">Hop Depth</span>
             <span className="d-val font-mono">{node.hop === 0 ? '0 (Origin)' : `Hop ${node.hop}`}</span>
           </div>
-
-          <div className="drawer-stat">
-            <span className="d-label">Balance</span>
-            <span className="d-val font-mono text-cyan">{node.balance || '--'}</span>
-          </div>
-
-          <div className="drawer-stat">
-            <span className="d-label">Risk Rating</span>
-            <span className={`risk-tag ${getRiskClass(node.riskLevel)}`}>
-              {node.riskLevel || 'Unknown'} ({node.riskScore}/100)
-            </span>
-          </div>
-
-          <div className="drawer-stat">
-            <span className="d-label">Tx Count</span>
-            <span className="d-val font-mono">{node.txCount?.toLocaleString() || '--'}</span>
-          </div>
         </div>
 
         {/* Attribution Info */}
@@ -128,12 +101,6 @@ export default function NodeDetailsModal({ node, connectedLinks, onClose }) {
               <span className="attr-key">Identified VASP:</span>
               <span className="attr-val text-emerald font-semibold">{node.vaspName}</span>
             </div>
-            {node.vaspCategory && (
-              <div className="attr-row">
-                <span className="attr-key">Entity Category:</span>
-                <span className="attr-val">{node.vaspCategory}</span>
-              </div>
-            )}
           </div>
         )}
 
@@ -154,7 +121,6 @@ export default function NodeDetailsModal({ node, connectedLinks, onClose }) {
                       {isOutgoing ? 'OUT →' : '← IN'}
                     </span>
                     <span className="transfer-amount font-mono text-cyan">{link.amount}</span>
-                    <span className="transfer-usd">{link.amountUsd}</span>
                   </div>
 
                   <div className="transfer-meta">
@@ -162,6 +128,9 @@ export default function NodeDetailsModal({ node, connectedLinks, onClose }) {
                       {isOutgoing ? 'To: ' : 'From: '}<strong>{formatAddress(counterparty)}</strong>
                     </span>
                     <span className="transfer-time font-mono">{link.timestamp}</span>
+                  </div>
+                  <div className="transfer-meta" style={{marginTop: '4px'}}>
+                    <span className="transfer-party" style={{fontSize: '10px', color: '#64748b'}}>TxHash: {formatAddress(link.txHash)}</span>
                   </div>
                 </div>
               );

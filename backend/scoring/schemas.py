@@ -28,6 +28,7 @@ class GraphInput(BaseModel):
 
 class ScoringResult(BaseModel):
     vasp_name: Optional[str]
+    destination_address: Optional[str] = None
     score: int = Field(ge=0, le=100)
     confidence_level: str  # e.g., "HIGH", "MEDIUM", "LOW"
     hop_count: int

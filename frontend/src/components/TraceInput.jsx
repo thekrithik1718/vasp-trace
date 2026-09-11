@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 
 const SAMPLE_ADDRESSES = [
-  { label: 'ETH Exploit Cluster', address: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045', chain: 'Ethereum' },
-  { label: 'BTC Mixer Outflow', address: 'bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq', chain: 'Bitcoin' },
-  { label: 'High-Volume Nexus', address: '0x3cD751E6b0078Be393132286c442345e5DC49699', chain: 'Ethereum' }
+  { label: 'Suspicious Wallet 1', address: 'wallet_suspicious_001', chain: 'Sample Data' }
 ];
 
 export default function TraceInput({ address, setAddress, onTrace, isTracing, hopDepth, setHopDepth }) {
