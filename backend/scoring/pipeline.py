@@ -32,7 +32,10 @@ def run_scoring_pipeline(graph_input: GraphInput, vasp_detector: VaspDetector) -
         
         # 2. Calculate Score
         result = calculate_score(features)
-        results.append(result)
+        
+        # Exclude unknown destinations
+        if result.vasp_name is not None:
+            results.append(result)
         
     # Rank results by score descending
     results.sort(key=lambda x: x.score, reverse=True)

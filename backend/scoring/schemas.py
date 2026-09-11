@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from typing import List, Optional
 from datetime import datetime
 
@@ -13,8 +13,7 @@ class Transaction(BaseModel):
     timestamp: datetime
     tx_hash: str
     
-    class Config:
-        populate_by_name = True
+    model_config = ConfigDict(populate_by_name=True)
 
 class TransactionPath(BaseModel):
     addresses: List[str]
